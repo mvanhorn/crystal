@@ -931,7 +931,7 @@ class Crystal::Call
               end
             end
 
-            case old_body = block.body
+            case old_body = block.body.clone
             when Nop
               # do nothing
               new_body = old_body
@@ -952,7 +952,7 @@ class Crystal::Call
               wrong_number_of "block parameters", block.args.size, fun_args.size
             end
 
-            a_def = Def.new("->", fun_args, block.body).at(block)
+            a_def = Def.new("->", fun_args, block.body.clone).at(block)
             a_def.captured_block = true
           end
 

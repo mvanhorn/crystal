@@ -1528,6 +1528,48 @@ describe "Code gen: block" do
       CRYSTAL
   end
 
+  it "dispatches a short-circuiting block to a captured virtual target (#17177)" do
+    run(<<-CRYSTAL).to_b.should be_true
+      class Base
+        def call(& : -> Bool)
+          false
+        end
+      end
+
+      class Subclass < Base
+        def call(&block : -> Bool)
+          block.call
+        end
+      end
+
+      target = Subclass.new.as(Base)
+      target.call { false || true }
+      CRYSTAL
+  end
+
+  it "dispatches short-circuiting blocks to captured and non-captured virtual targets (#17177)" do
+    run(<<-CRYSTAL).to_b.should be_true
+      class Base
+        def call(& : -> Bool)
+          yield
+        end
+      end
+
+      class Subclass < Base
+        def call(&block : -> Bool)
+          block.call
+        end
+      end
+
+      base = Base.new.as(Base)
+      subclass = Subclass.new.as(Base)
+      base.call { false || true } &&
+        subclass.call { false || true } &&
+        base.call { true && true } &&
+        subclass.call { true && true }
+      CRYSTAL
+  end
+
   it "codegens block with repeated underscore and different types (#4711)" do
     codegen(<<-CRYSTAL)
       def foo
