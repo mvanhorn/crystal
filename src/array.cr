@@ -112,6 +112,8 @@ class Array(T)
   def initialize(initial_capacity : Int)
     if initial_capacity < 0
       raise ArgumentError.new("Negative array size: #{initial_capacity}")
+    elsif initial_capacity > Int32::MAX
+      raise OverflowError.new("Array size larger than Int32::MAX: #{initial_capacity}")
     end
 
     @size = 0
@@ -145,6 +147,8 @@ class Array(T)
   def initialize(size : Int, value : T)
     if size < 0
       raise ArgumentError.new("Negative array size: #{size}")
+    elsif size > Int32::MAX
+      raise OverflowError.new("Array size larger than Int32::MAX: #{size}")
     end
 
     @size = size.to_i

@@ -52,6 +52,19 @@ describe "Array" do
       ary.should eq([0, 2, 4, 6, 8])
     end
 
+    it "raises on sizes larger than Int32::MAX" do
+      size = Int64.new(Int32::MAX) + 1
+      expect_raises(OverflowError, "Int32::MAX") do
+        Array.new(size, 0)
+      end
+      expect_raises(OverflowError, "Int32::MAX") do
+        Array(Int32).new(size)
+      end
+      expect_raises(OverflowError, "Int32::MAX") do
+        Array.new(size) { 0 }
+      end
+    end
+
     it "raises on negative count" do
       expect_raises(ArgumentError, "Negative array size") do
         Array.new(-1, 3)
